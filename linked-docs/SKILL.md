@@ -44,7 +44,7 @@ Conventions:
 - **Root level** = cross-app / synthesis layer.
 - **`<repo>/<service>/`** = always. Even single-service repos nest one folder deep, so the layout is uniform.
 - **`<repo>/<shared-section>/`** = optional. Use when objects, flows, or contracts genuinely span multiple services in the same repo (shared Kafka schema package, repo-wide config). Otherwise put everything under `<repo>/<service>/`.
-- **Naming**: `<repo>` matches the git repo name (e.g., `xplatform-priority-whitelist-ingestion-service`); `<service>` matches the deployable / `apps/<service>` name (e.g., `ingestion-service`).
+- **Naming**: `<repo>` matches the git repo name (e.g., `spring-petclinic-microservices`); `<service>` matches the deployable / `<service>` module name (e.g., `customers-service`).
 
 Path depths from a per-service object page (`<docs-root>/<repo>/<service>/objects/X.md`):
 
@@ -85,7 +85,7 @@ Field syntax (definition list, not table):
 
 Medium section conventions:
 - Title reflects medium: `## Stream` for Kafka, `## Storage` for DDB / Redis / SQL / S3, `## Refs` for DTOs / synthetics
-- First line: `**<Backend>** (see [contract](../contracts/<backend>.md)) — <key facts: topic / table / key / retention / partition>`
+- First line: `**<Backend>** (see `[contract]` linked to `../contracts/<backend>.md`) — <key facts: topic / table / key / retention / partition>`
 - Inline the wire / storage schema if small (Avro JSON, zod schema)
 - Per-use subsection with verb H3:
   - Stream: `### Produced` / `### Consumed`
@@ -98,9 +98,9 @@ Lineage:
 - `### To`: which objects derive significant fields. Use spread pseudocode — never prose folds
 
 References:
-- Kafka stream event: [references/xplatform-priority-whitelist-ingestion-service/ingestion-service/objects/PriorityWhitelistApplyEvent.md](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/objects/PriorityWhitelistApplyEvent.md)
-- DDB row with status-split fields + zod validation: [references/xplatform-priority-whitelist-ingestion-service/ingestion-service/objects/PriorityWhitelistRecord.md](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/objects/PriorityWhitelistRecord.md)
-- Anonymous HTTP response (synthetic): [references/xplatform-priority-whitelist-ingestion-service/ingestion-service/objects/AnonymousUploadLinkResponse.md](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/objects/AnonymousUploadLinkResponse.md)
+- JPA entity (parent, Bean Validation): [references/spring-petclinic-microservices/customers-service/objects/Owner.md](references/spring-petclinic-microservices/customers-service/objects/Owner.md)
+- JPA entity (child of Owner, FK relation): [references/spring-petclinic-microservices/customers-service/objects/Pet.md](references/spring-petclinic-microservices/customers-service/objects/Pet.md)
+- Synthetic HTTP response composing parent + child: [references/spring-petclinic-microservices/customers-service/objects/OwnerSummaryResponse.md](references/spring-petclinic-microservices/customers-service/objects/OwnerSummaryResponse.md)
 
 ### Per-repo flow page (`<repo>/flows/<flow-name>.md`)
 
@@ -114,7 +114,7 @@ Section order:
 6. **## Touches** — bullet list grouped by Kind (Storage / Stream / Contract); each line links the object / contract
 7. **## Code** — bullet list mapping step → file:line
 
-Reference: [references/xplatform-priority-whitelist-ingestion-service/ingestion-service/flows/upload-validate-emit.md](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/flows/upload-validate-emit.md).
+Reference: [references/spring-petclinic-microservices/customers-service/flows/upsert-owner-and-pets.md](references/spring-petclinic-microservices/customers-service/flows/upsert-owner-and-pets.md).
 
 ### Contract page (`<repo>/contracts/<protocol>.md`)
 
@@ -124,7 +124,7 @@ Structure:
 
 1. **H1** — protocol (`Kafka`, `REST`, `DynamoDB`, `S3`, `gRPC`, ...)
 2. **Intro** — 1-2 sentences
-3. **H2 prefix groups** — `notifying.cash_blast.priority_whitelist.*` / `/api/v1/whitelist/*` / `priority_whitelist.*` / `playson-priority-whitelist-{env}`
+3. **H2 prefix groups** — `petclinic.*` / `/owners/*` / `customers-service` / `springCloudBus`
 4. **H3 per topic / endpoint / table / key** — `### **<Verb>** <full-identifier>`:
    - Kafka: `**Produce**` / `**Consume**`
    - REST / gRPC: `**Serve**` (inbound) / `**Call**` (outbound)
@@ -139,10 +139,10 @@ Structure:
 A topic that's produced and self-consumed appears under TWO H3s — once under `**Produce**`, once under `**Consume**`.
 
 References:
-- Kafka: [references/xplatform-priority-whitelist-ingestion-service/ingestion-service/contracts/kafka.md](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/contracts/kafka.md)
-- REST: [references/xplatform-priority-whitelist-ingestion-service/ingestion-service/contracts/rest.md](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/contracts/rest.md)
-- DynamoDB: [references/xplatform-priority-whitelist-ingestion-service/ingestion-service/contracts/dynamodb.md](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/contracts/dynamodb.md)
-- S3: [references/xplatform-priority-whitelist-ingestion-service/ingestion-service/contracts/s3.md](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/contracts/s3.md)
+- MySQL (relational store with parent/child tables): [references/spring-petclinic-microservices/customers-service/contracts/mysql.md](references/spring-petclinic-microservices/customers-service/contracts/mysql.md)
+- REST (HTTP endpoints served): [references/spring-petclinic-microservices/customers-service/contracts/rest.md](references/spring-petclinic-microservices/customers-service/contracts/rest.md)
+- Eureka (service discovery registration): [references/spring-petclinic-microservices/customers-service/contracts/eureka.md](references/spring-petclinic-microservices/customers-service/contracts/eureka.md)
+- Spring Cloud Bus (async refresh events over RabbitMQ): [references/spring-petclinic-microservices/customers-service/contracts/bus.md](references/spring-petclinic-microservices/customers-service/contracts/bus.md)
 
 ### Cross-app flow page (`cross-app/flows/<flow-name>.md`)
 
@@ -154,7 +154,7 @@ Section order:
 4. **## Sequence** — mermaid `sequenceDiagram` with all participants
 5. **## Touches** — H3 per service, each listing Flows / Objects / Contracts as bulleted links. Final H3 `External` for non-repo actors
 
-Reference: [references/cross-app/flows/priority-whitelist-e2e.md](references/cross-app/flows/priority-whitelist-e2e.md).
+Reference: [references/cross-app/flows/view-owner-profile-with-visits.md](references/cross-app/flows/view-owner-profile-with-visits.md).
 
 ## Style rules
 
@@ -171,27 +171,27 @@ Definition lists, bullet lists, and headed subsections only. Tables are hard to 
 - Bare relative markdown paths: `[name](../objects/X.md)`.
 - Sibling links inside the same folder use bare filenames: `[X](X.md)`.
 - Every emit / consume / write / read entry carries BOTH a doc link AND a code link.
-- Use full topic names / endpoint paths / table names / S3 key patterns — no abbreviations like `apply.v1`.
+- Use full topic names / endpoint paths / table names / S3 key patterns — no abbreviations like `/owners` for `POST /owners` or `bus` for `springCloudBus`.
 - Self-references (object in its own page, storage in its own contract): bare. Cross-references: linked.
 
 ### Pseudocode
 
 Use HTML `<pre>` blocks with inline `<a>` tags whenever canonical object names or storage tags need to be clickable. Standard markdown ``` fences do NOT render links inside.
 
-Reserve fenced ``` blocks for literal code (Avro JSON, zod schema, raw config).
+Reserve fenced ``` blocks for literal code (Avro JSON, JPA annotations, raw config).
 
 ```
-record ← load <a href="../objects/PriorityWhitelistRecord.md">PriorityWhitelistRecord</a> (<a href="../contracts/dynamodb.md">DDB</a>) by id
+owner ← load <a href="references/spring-petclinic-microservices/customers-service/objects/Owner.md">Owner</a> (<a href="references/spring-petclinic-microservices/customers-service/contracts/mysql.md">MySQL</a>) by id
 ```
 
 Storage tag rules:
-- Every canonical object name in pseudocode is followed by `(<Storage>)`: `PriorityWhitelistRecord (DDB)` / `PriorityWhitelistApplyEvent (Kafka)` / `PriorityWhitelistCsv (S3)` / `AnonymousUploadLinkResponse (HTTP)`.
-- The storage tag links to its contract page (cross-page). Self-page tag (e.g., `(Kafka)` inside `kafka.md`): bare.
-- Aliases / local variables (`record.field`, `event.s3_key`) do NOT carry storage tags — the type was established when the canonical name first appeared.
+- Every canonical object name in pseudocode is followed by `(<Storage>)`: `Owner (MySQL)` / `Pet (MySQL)` / `OwnerSummaryResponse (HTTP)` / `RefreshRemoteApplicationEvent (Bus)`.
+- The storage tag links to its contract page (cross-page). Self-page tag (e.g., `(MySQL)` inside `mysql.md`): bare.
+- Aliases / local variables (`owner.firstName`, `pet.ownerId`) do NOT carry storage tags — the type was established when the canonical name first appeared.
 
 Spread rules:
-- Spread expressions use the canonical object name, not the alias: `{ ...PriorityWhitelistRecord (DDB), upload_url }`, NOT `{ ...record, upload_url }`. Both halves of the storage tag still apply.
-- Lineage mappings always use spread pseudocode — never prose folds like "(id, s3_key copied; upload_url added)".
+- Spread expressions use the canonical object name, not the alias: `{ ...Owner (MySQL), pets }`, NOT `{ ...owner, pets }`. Both halves of the storage tag still apply.
+- Lineage mappings always use spread pseudocode — never prose folds like "(id, firstName, lastName copied; pets added)".
 
 ### Cross-app pseudocode (extra rules)
 
@@ -200,31 +200,31 @@ In `cross-app/flows/<flow>.md` only:
 - Each step header is `<service> · <linked-flow>:` introducing the action. The flow link points to the per-repo flow that owns that step.
 
   ```
-  4. ingestion-service · <a href="../../flows/upload-validate-emit.md">upload-validate-emit</a>:
-     validate CSV at s3_key
-     on success: emit ...
+  2. api-gateway → customers-service · <a href="references/spring-petclinic-microservices/customers-service/flows/upsert-owner-and-pets.md">upsert-owner-and-pets</a> (read path):
+     GET http://customers-service/owners/{id}
+     ← OwnerSummaryResponse
   ```
 
-- External actors with no in-repo flow stay unlinked (`Spinlab → S3:`, `ClickHouse:` ...).
+- External actors with no in-repo flow stay unlinked (`browser → api-gateway:`, `RabbitMQ:` ...).
 
 - Storage tag includes the owning service: `(<linked-service> <linked-storage>)`. Service link → that service's docs root (`../../` for the current repo, `../../<other-repo>/` for siblings). Storage link → that service's contract page.
 
   ```
-  emit <a href="../../objects/X.md">X</a> (<a href="../../">ingestion-service</a> <a href="../../contracts/kafka.md">Kafka</a>)
+  return <a href="references/spring-petclinic-microservices/customers-service/objects/OwnerSummaryResponse.md">OwnerSummaryResponse</a> (<a href="references/spring-petclinic-microservices/customers-service/">customers-service</a> <a href="references/spring-petclinic-microservices/customers-service/contracts/rest.md">HTTP</a>)
   ```
 
-- Abstraction stays at contract boundaries. No internal mutations like `record.status ← x` — those belong in per-repo flow pseudocode.
+- Abstraction stays at contract boundaries. No internal mutations like `owner.firstName ← x` — those belong in per-repo flow pseudocode.
 
 ### Naming
 
 - Objects: canonical type name from code (PascalCase).
-- Inline / synthetic shapes with no formal type: `Anonymous<ConstructionSite>` (`AnonymousUploadLinkResponse` = response body of `POST /api/v1/whitelist/upload-link`).
-- Flows: kebab-case verb-noun (`upload-validate-emit`, `draw-time-application`).
-- Contracts: lowercased protocol / backend name (`kafka.md`, `rest.md`, `dynamodb.md`).
+- Inline / synthetic shapes with no formal type: `<Subject>SummaryResponse` / `Anonymous<ConstructionSite>` (e.g., `OwnerSummaryResponse` = response body of `GET /owners/{id}`).
+- Flows: kebab-case verb-noun (`upsert-owner-and-pets`, `view-owner-profile-with-visits`).
+- Contracts: lowercased protocol / backend name (`mysql.md`, `rest.md`, `eureka.md`, `bus.md`).
 
 ### Validation section
 
-Include `## Validation` on an object page when runtime validation exists beyond what the transport schema (Avro / proto / DDB type) already enforces. Inline the zod schema if used; bullet-list hand-written checks. Place between Fields and the medium section.
+Include `## Validation` on an object page when runtime validation exists beyond what the transport schema (Avro / proto / JPA column type) already enforces. Inline the schema (Bean Validation, zod, etc.) if used; bullet-list hand-written checks. Place between Fields and the medium section.
 
 ### Status-dependent fields
 
@@ -268,14 +268,14 @@ Before considering any docs change complete:
 
 Canonical examples — read before authoring:
 
-- Objects (under `references/xplatform-priority-whitelist-ingestion-service/ingestion-service/objects/`):
-  - [Kafka stream event — PriorityWhitelistApplyEvent](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/objects/PriorityWhitelistApplyEvent.md)
-  - [DDB row with lifecycle states + zod — PriorityWhitelistRecord](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/objects/PriorityWhitelistRecord.md)
-  - [Anonymous HTTP response — AnonymousUploadLinkResponse](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/objects/AnonymousUploadLinkResponse.md)
-- Per-repo flow: [upload-validate-emit](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/flows/upload-validate-emit.md)
-- Contracts (under `references/xplatform-priority-whitelist-ingestion-service/ingestion-service/contracts/`):
-  - [Kafka](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/contracts/kafka.md)
-  - [REST](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/contracts/rest.md)
-  - [DynamoDB](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/contracts/dynamodb.md)
-  - [S3](references/xplatform-priority-whitelist-ingestion-service/ingestion-service/contracts/s3.md)
-- Cross-app flow: [priority-whitelist-e2e](references/cross-app/flows/priority-whitelist-e2e.md)
+- Objects (under `references/spring-petclinic-microservices/customers-service/objects/`):
+  - [JPA entity, parent — Owner](references/spring-petclinic-microservices/customers-service/objects/Owner.md)
+  - [JPA entity, child of Owner — Pet](references/spring-petclinic-microservices/customers-service/objects/Pet.md)
+  - [Synthetic HTTP response — OwnerSummaryResponse](references/spring-petclinic-microservices/customers-service/objects/OwnerSummaryResponse.md)
+- Per-repo flow: [upsert-owner-and-pets](references/spring-petclinic-microservices/customers-service/flows/upsert-owner-and-pets.md)
+- Contracts (under `references/spring-petclinic-microservices/customers-service/contracts/`):
+  - [MySQL](references/spring-petclinic-microservices/customers-service/contracts/mysql.md)
+  - [REST](references/spring-petclinic-microservices/customers-service/contracts/rest.md)
+  - [Eureka](references/spring-petclinic-microservices/customers-service/contracts/eureka.md)
+  - [Spring Cloud Bus](references/spring-petclinic-microservices/customers-service/contracts/bus.md)
+- Cross-app flow: [view-owner-profile-with-visits](references/cross-app/flows/view-owner-profile-with-visits.md)

@@ -62,7 +62,7 @@ Dispatch (in a single message, one Agent block per repo):
 - `model: opus`
 - Prompt: see [Discover agent template](#discover-agent-template), substituting `{{REPO}}` and `{{REPO_PATH}}`.
 
-Each Agent returns a structured inventory whose top-level units are services (`apps/<name>`) plus an optional `_common` unit covering repo-shared code (`libs/common/`, `shared/`) AND the entire repo when there is no per-service code (e.g. `kafka-contract`, `xplatform-proto-contract`). `_common` always maps to repo-level docs (no service folder). Keep the inventories in orchestrator context — they feed phase-3 fan-out.
+Each Agent returns a structured inventory whose top-level units are services (`apps/<name>`) plus an optional `_common` unit covering repo-shared code (`libs/common/`, `shared/`) AND the entire repo when there is no per-service code (e.g. `proto-contracts`, `kafka-schemas`). `_common` always maps to repo-level docs (no service folder). Keep the inventories in orchestrator context — they feed phase-3 fan-out.
 
 ### Phase 3 — Per-(Repo, Unit) Doc Write (parallel Agents, fresh dispatch)
 
@@ -191,7 +191,7 @@ A structured inventory whose top-level units drive phase-3 fan-out. Units are: p
   - S3 / DDB / SQL / Redis access points: <relative paths>
 - schemas owned by this service: <relative paths>
 
-#### _common                # emit when EITHER (a) the repo has shared code outside any service (e.g. `libs/common/`, `shared/`) OR (b) the repo has no per-service code at all (e.g. `kafka-contract`, `xplatform-proto-contract`). Maps to repo-level docs at `<docs-root>/<repo>/{objects,flows,contracts}/`.
+#### _common                # emit when EITHER (a) the repo has shared code outside any service (e.g. `libs/common/`, `shared/`) OR (b) the repo has no per-service code at all (e.g. `proto-contracts`, `kafka-schemas`). Maps to repo-level docs at `<docs-root>/<repo>/{objects,flows,contracts}/`.
 - source roots: <relative paths>
 - entry-point surfaces (if any): <as above>
 - schemas: <relative paths>
@@ -293,14 +293,14 @@ INPUTS
 - Per-repo docs (already written and verified): `{{DOCS_ROOT}}/<repo>/**/*.md`
 - Cross-app flows to author (from orchestrator plan):
 {{PLANNED_FLOWS}}
-- Authoritative rulebook: `~/.claude/skills/linked-docs/SKILL.md`; in particular, read `~/.claude/skills/linked-docs/references/cross-app/flows/priority-whitelist-e2e.md` for cross-app pseudocode form.
+- Authoritative rulebook: `~/.claude/skills/linked-docs/SKILL.md`; in particular, read `~/.claude/skills/linked-docs/references/cross-app/flows/view-owner-profile-with-visits.md` for cross-app pseudocode form.
 - `{{DOCS_ROOT}}/names.json` (read-only — phase 3 already minted names; just look up existing entries when you need a display name).
 
 CONSTRAINTS
 - Do NOT read source code. All facts in cross-app docs derive from per-repo docs.
 - Cross-app pseudocode rules (these are easy to violate):
   - Step header form: `<service> · <linked-flow>:` introducing the action. Service link points to that service's docs root; flow link points to the per-repo flow.
-  - External actors (Spinlab, ClickHouse, browsers, ...) stay unlinked.
+  - External actors (browsers, mobile clients, third-party APIs, ...) stay unlinked.
   - Storage tag form: `(<linked-service> <linked-storage>)` — both halves linked.
   - No internal mutations in cross-app pseudocode (no `record.status ← X`). Abstraction stays at contract boundaries.
 - `README.md` is a cross-app catalog: one-line summary per cross-app flow with a link, one-line summary per repo with a link to that repo's docs root.
